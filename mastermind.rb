@@ -1,3 +1,4 @@
+require 'pry-byebug'
 
 class Game
     attr_accessor :code, :number_holes, :number_colors, :number_guesses
@@ -9,63 +10,57 @@ class Game
         @number_holes = number_holes
         @number_guesses = number_guesses
         @guess_number = 0
-        @guesses = []
+        @board = []
+        @feedboard = []
     end
 
-    def self.new_game
-        game = Game.new
-        rand_array = game.number_holes.times.map{ Random.rand(game.number_colors) }
-        game.code = rand_array.map{ |i| @@colors[i] }
-        board = []
-        game.number_guesses.times{
-            guess = game.guess
-            board.push(guess)
-            board.length().times{ |i|
-                p board[i]
+    def new_game
+        self.set_code
+        self.number_guesses.times{
+            guess = self.guess
+            @board.length.times{ |i|
+                self.display(i)
             }
-            
-        }
-        
+        } 
+    end
+
+    def display(i)
+        p [@board[i], @feedboard[i]]
+    end
+
+    def set_code
+        rand_array = self.number_holes.times.map{ Random.rand(self.number_colors) }
+        self.code = rand_array.map{ |i| @@colors[i] }
     end
 
     def guess
+        @board[@guess_number] = @number_holes.times.map{ |i| puts "Enter color  ##{i + 1}: "; gets.chomp }
+        feedback = self.check(@board[@guess_number])
+        @feedboard.push(feedback)
         @guess_number += 1
-        @guesses[@guess_number] = @number_holes.times.map{ |i| puts "Enter color  ##{i + 1}: "; gets.chomp }
-        @feedback = self.check(@guesses[@guess_number])
+        @guesses
     end
 
     def check(guess)
-        case
-        when guess == self.code
+        if guess == self.code
             puts "You win!"
         end
-        self.create_feedback(guess)
-        @feedback
-    end
-
-    def create_feedback(guess)
-        @feedback = []
+        feedback = []
         @number_holes.times{ |i|
             if guess[i].to_s == self.code[i].to_s
-                @feedback.push("black")
-            elsif self.code[i..].include?(guess[i])
-                @feedback.push("white")
+                feedback.push("black")
+            elsif self.code.select.with_index{ |val, i| val != guess[i] }
+                .include?(guess[i]) && self.code[i..].each_with_index{ |code, i| code.to_s == guess[i].to_s ? false : true }
+                feedback.push("white")
             else
-                @feedback.push(" ") 
+                feedback.push(" ") 
             end
         }
+        feedback
     end
-end
+end   
 
-class Peg
-    attr_reader :color, :position
-
-    def initialize(color, position)
-        @color = color
-        @position = position
-    end
-end    
-
-Game.new_game
+game = Game.new
+game.new_game
 
 
