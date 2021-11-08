@@ -14,37 +14,50 @@ class Game
         @feedboard = []
     end
 
-    def new_game
-        self.set_code
-        self.number_guesses.times{
+    def self.new_game
+        game = Game.new
+        game.start_game
+    end
+
+    def start_game
+        self.set_secret
+        guess_number = 0
+        guess = 0
+        until guess_number == self.number_guesses || guess == self.code
+            guess_number += 1
             guess = self.guess
             @board.length.times{ |i|
                 self.display(i)
             }
-        } 
+        end
+        if guess == self.code
+            puts "\nYou win!"
+            puts "\n"
+        else 
+            puts "\nYou lose!"
+            puts "\n"
+        end
     end
 
     def display(i)
         p [@board[i], @feedboard[i]]
     end
 
-    def set_code
+    def set_secret
         rand_array = self.number_holes.times.map{ Random.rand(self.number_colors) }
         self.code = rand_array.map{ |i| @@colors[i] }
     end
 
     def guess
-        @board[@guess_number] = @number_holes.times.map{ |i| puts "Enter color  ##{i + 1}: "; gets.chomp }
+        guess = @number_holes.times.map{ |i| puts "Enter color  ##{i + 1}: "; gets.chomp }
+        @board[@guess_number] = guess
         feedback = self.check(@board[@guess_number])
         @feedboard.push(feedback)
         @guess_number += 1
-        @guesses
+        guess
     end
 
     def check(guess)
-        if guess == self.code
-            puts "You win!"
-        end
         feedback = []
         @number_holes.times{ |i|
             if guess[i].to_s == self.code[i].to_s
@@ -60,7 +73,6 @@ class Game
     end
 end   
 
-game = Game.new
-game.new_game
+Game.new_game
 
 
