@@ -26,9 +26,13 @@ class Game
         until guess_number == self.number_guesses || guess == self.code
             guess_number += 1
             guess = self.guess
+            puts "\n"
+            puts "\n"
+            puts "\n"
             @board.length.times{ |i|
                 self.display(i)
             }
+            puts "\n"
         end
         if guess == self.code
             puts "\nYou win!"
@@ -49,7 +53,14 @@ class Game
     end
 
     def guess
-        guess = @number_holes.times.map{ |i| puts "Enter color  ##{i + 1}: "; gets.chomp }
+        guess = @number_holes.times.map{ |i|
+                                         answer = nil
+                                         until @@colors[..self.number_colors - 1].include?(answer) 
+                                            puts "\nEnter color ##{i + 1}(#{@@colors[..self.number_colors - 1]}):  "
+                                            answer = gets.chomp
+                                         end
+                                         answer
+                                        }
         @board[@guess_number] = guess
         feedback = self.check(@board[@guess_number])
         @feedboard.push(feedback)
