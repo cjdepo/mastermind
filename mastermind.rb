@@ -103,13 +103,11 @@ class Game
         if @lastfeed
             @whites = @lastfeed.map.with_index{ |v, i| v == 'white' ? @board[-1][i] : nil }
             @white_values = @whites.compact
-            p @white_values
             guess = init_guess.map.with_index{ |v, i| 
                 if @lastfeed[i] == 'black'
                     @board[-1][i]
                 elsif @lastfeed[i] == 'white'
                     if @white_values && @whites[0] != @board[-1][i]
-                        p @whites_values
                         @white_values.pop()
                     elsif init_guess[i] != @board[-1][i]
                         init_guess[i]
@@ -117,7 +115,6 @@ class Game
                         @@colors[Random.rand(self.number_colors)]
                     end
                 elsif @white_values.any?()
-                    p @white_values
                     @white_values.pop()
                 else 
                     init_guess[i]
